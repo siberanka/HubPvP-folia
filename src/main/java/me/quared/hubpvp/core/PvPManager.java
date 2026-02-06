@@ -1,17 +1,15 @@
 package me.quared.hubpvp.core;
 
-import lombok.Getter;
 import me.quared.hubpvp.HubPvP;
+import me.quared.hubpvp.scheduler.CancellableTask;
 import me.quared.hubpvp.util.StringUtil;
-import me.quared.itemguilib.items.CustomItem;
-import me.quared.itemguilib.items.CustomItemManager;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -19,14 +17,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Getter
 public class PvPManager {
 
 	private final Map<Player, PvPState> playerPvpStates;
-	private final Map<Player, BukkitRunnable> currentTimers;
+	private final Map<Player, CancellableTask> currentTimers;
 	private final List<OldPlayerData> oldPlayerDataList;
 
-	private CustomItem weapon, helmet, chestplate, leggings, boots;
+	private ItemStack weapon, helmet, chestplate, leggings, boots;
 
 	public PvPManager() {
 		playerPvpStates = new HashMap<>();
@@ -47,36 +44,61 @@ public class PvPManager {
 		boots = getItemFromConfig("boots");
 	}
 
-	public CustomItem getItemFromConfig(String name) {
+	public ItemStack getItemFromConfig(String name) {
 		HubPvP instance = HubPvP.instance();
 		String material = instance.getConfig().getString("items." + name + ".material");
 		if (material == null) {
 			instance.getLogger().warning("Material for item " + name + " is null!");
-			return null;
+			return new ItemStack(Material.AIR);
 		}
-		CustomItem item = CustomItemManager.get().createCustomItem(new ItemStack(Material.valueOf(material)));
+		Material resolvedMaterial;
+		try {
+			resolvedMaterial = Material.valueOf(material.toUpperCase());
+		} catch (IllegalArgumentException ex) {
+			instance.getLogger().warning("Invalid material for item " + name + ": " + material);
+			return new ItemStack(Material.AIR);
+		}
+		ItemStack item = new ItemStack(resolvedMaterial);
+		ItemMeta meta = item.getItemMeta();
+		if (meta == null) return item;
 
 		String itemName = instance.getConfig().getString("items." + name + ".name");
-		if (itemName != null && !itemName.isEmpty()) item.setName(StringUtil.colorize(itemName));
+		if (itemName != null && !itemName.isEmpty()) meta.setDisplayName(StringUtil.colorize(itemName));
+
+		if ("weapon".equalsIgnoreCase(name)) {
+			int customModelData = instance.getConfig().getInt("items.weapon.custom-model-data", -1);
+			if (customModelData >= 0) {
+				meta.setCustomModelData(customModelData);
+			}
+		}
 
 		List<String> lore = instance.getConfig().getStringList("items." + name + ".lore");
-		if (!(lore.size() == 1 && lore.get(0).isEmpty())) item.addLore(StringUtil.colorize(lore));
+		if (!lore.isEmpty() && !(lore.size() == 1 && lore.get(0).isEmpty())) meta.setLore(StringUtil.colorize(lore));
 
 		List<String> enchants = instance.getConfig().getStringList("items." + name + ".enchantments");
 		if (enchants != null && !enchants.isEmpty()) {
 			for (String enchant : enchants) {
 				String[] split = enchant.split(":");
-				Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(split[0].toLowerCase()));
-				if (enchantment == null) {
-					HubPvP.instance().getLogger().warning("Could not find enchantment " + split[0]);
+				if (split.length != 2) {
+					instance.getLogger().warning("Invalid enchant format for " + name + ": " + enchant);
 					continue;
 				}
-				item.getItemStack().addEnchantment(enchantment, Integer.parseInt(split[1]));
+				Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(split[0].toLowerCase()));
+				if (enchantment == null) {
+					instance.getLogger().warning("Could not find enchantment " + split[0]);
+					continue;
+				}
+				try {
+					item.addUnsafeEnchantment(enchantment, Integer.parseInt(split[1]));
+				} catch (NumberFormatException ex) {
+					instance.getLogger().warning("Invalid enchant level for " + name + ": " + enchant);
+				}
 			}
 		}
 
-		item.addFlags(ItemFlag.HIDE_UNBREAKABLE);
-		item.setUnbreakable(true);
+		meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+		meta.setUnbreakable(true);
+		item.setItemMeta(meta);
 
 		return item;
 	}
@@ -88,12 +110,13 @@ public class PvPManager {
 		getOldPlayerDataList().add(new OldPlayerData(player, player.getInventory().getArmorContents(), player.getAllowFlight()));
 
 		player.setAllowFlight(false);
-		player.getInventory().setHelmet(getHelmet().getItemStack());
-		player.getInventory().setChestplate(getChestplate().getItemStack());
-		player.getInventory().setLeggings(getLeggings().getItemStack());
-		player.getInventory().setBoots(getBoots().getItemStack());
+		player.getInventory().setHelmet(getHelmet().clone());
+		player.getInventory().setChestplate(getChestplate().clone());
+		player.getInventory().setLeggings(getLeggings().clone());
+		player.getInventory().setBoots(getBoots().clone());
 
-		player.sendMessage(StringUtil.colorize(HubPvP.instance().getConfig().getString("lang.pvp-enabled")));
+		sendPvpStatus(player);
+		player.sendMessage(StringUtil.format(player, HubPvP.instance().getConfig().getString("lang.pvp-enabled")));
 	}
 
 	public void setPlayerState(Player p, PvPState state) {
@@ -121,7 +144,8 @@ public class PvPManager {
 			player.setAllowFlight(oldPlayerData.canFly());
 		}
 
-		player.sendMessage(StringUtil.colorize(HubPvP.instance().getConfig().getString("lang.pvp-disabled")));
+		sendPvpStatus(player);
+		player.sendMessage(StringUtil.format(player, HubPvP.instance().getConfig().getString("lang.pvp-disabled")));
 	}
 
 	public void disable() {
@@ -140,10 +164,10 @@ public class PvPManager {
 	}
 
 	public void giveWeapon(Player p) {
-		p.getInventory().setItem(HubPvP.instance().getConfig().getInt("items.weapon.slot") - 1, getWeapon().getItemStack());
+		p.getInventory().setItem(HubPvP.instance().getConfig().getInt("items.weapon.slot") - 1, getWeapon().clone());
 	}
 
-	public void putTimer(Player p, BukkitRunnable timerTask) {
+	public void putTimer(Player p, CancellableTask timerTask) {
 		if (getCurrentTimers().containsKey(p)) {
 			getCurrentTimers().get(p).cancel();
 		}
@@ -155,6 +179,44 @@ public class PvPManager {
 			getCurrentTimers().get(p).cancel();
 		}
 		getCurrentTimers().remove(p);
+	}
+
+	public Map<Player, PvPState> getPlayerPvpStates() {
+		return playerPvpStates;
+	}
+
+	public Map<Player, CancellableTask> getCurrentTimers() {
+		return currentTimers;
+	}
+
+	public List<OldPlayerData> getOldPlayerDataList() {
+		return oldPlayerDataList;
+	}
+
+	public ItemStack getWeapon() {
+		return weapon;
+	}
+
+	public ItemStack getHelmet() {
+		return helmet;
+	}
+
+	public ItemStack getChestplate() {
+		return chestplate;
+	}
+
+	public ItemStack getLeggings() {
+		return leggings;
+	}
+
+	public ItemStack getBoots() {
+		return boots;
+	}
+
+	public void sendPvpStatus(Player player) {
+		String status = HubPvP.instance().getConfig().getString("lang.pvp-status");
+		if (status == null || status.isBlank()) return;
+		player.sendMessage(StringUtil.format(player, status));
 	}
 
 }

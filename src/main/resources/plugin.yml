@@ -1,9 +1,11 @@
 name: HubPvP
 version: ${project.version}
 main: me.quared.hubpvp.HubPvP
-api-version: 1.20
+api-version: 1.21
+folia-supported: true
 prefix: HubPvP
-authors: [ Quared ]
+authors: [ "Quared", "siberanka" ]
+softdepend: [ Geyser-Spigot, floodgate, PlaceholderAPI ]
 description: HubPvP plugin - A sword that players can PvP each other with in the hub!
 commands:
   hubpvp:

@@ -35,16 +35,15 @@ public class DeathListener implements Listener {
 
         if (healthOnKill != -1) {
             killer.setHealth(Math.min(killer.getHealth() + healthOnKill, killer.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()));
-            killer.sendMessage(StringUtil.colorize(instance.getConfig().getString("health-gained-message")
+            killer.sendMessage(StringUtil.format(killer, instance.getConfig().getString("health-gained-message")
                     .replace("%extra%", String.valueOf(healthOnKill)).replace("%killed%", victim.getDisplayName())));
         }
 
         pvpManager.disablePvP(victim);
 
-        victim.sendMessage(StringUtil.colorize(instance.getConfig().getString("lang.killed")).replace("%killer%", killer.getDisplayName()));
+        victim.sendMessage(StringUtil.format(victim, instance.getConfig().getString("lang.killed").replace("%killer%", killer.getDisplayName())));
 
-        killer.sendMessage(
-                StringUtil.colorize(instance.getConfig().getString("lang.killed-other")).replace("%killed%", victim.getDisplayName()));
+        killer.sendMessage(StringUtil.format(killer, instance.getConfig().getString("lang.killed-other").replace("%killed%", victim.getDisplayName())));
 
         e.setDeathMessage("");
     }

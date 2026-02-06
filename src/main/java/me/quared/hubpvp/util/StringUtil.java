@@ -1,6 +1,9 @@
 package me.quared.hubpvp.util;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +25,7 @@ public final class StringUtil {
 	}
 
 	public static String colorize(String message) {
+		if (message == null) return "";
 		Matcher matcher = HEX_PATTERN.matcher(ChatColor.translateAlternateColorCodes('&', message));
 		StringBuilder buffer = new StringBuilder();
 
@@ -30,6 +34,21 @@ public final class StringUtil {
 		}
 
 		return matcher.appendTail(buffer).toString();
+	}
+
+	public static String format(Player player, String message) {
+		if (message == null) return "";
+		String parsed = message;
+
+		if (player != null && Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+			try {
+				parsed = PlaceholderAPI.setPlaceholders(player, parsed);
+			} catch (NoClassDefFoundError ignored) {
+				// PlaceholderAPI not present at runtime.
+			}
+		}
+
+		return colorize(parsed);
 	}
 
 }

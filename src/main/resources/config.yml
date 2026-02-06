@@ -28,11 +28,17 @@ health-gained-message: '&aYou killed %killed% and gained +%extra% health!'
 disabled-worlds:
   - world_nopvp
 
+inventory:
+  lock-item-slots: true # Prevent moving items inside player inventory
+
 # --------------------------------------------------
 # Messages
 # --------------------------------------------------
 
 lang:
+  pvp-status: '&7PvP status updated.'
+  status-on: '&aON'
+  status-off: '&cOFF'
   pvp-enabled: '&6&l>&r&a PvP enabled!'
   pvp-enabling: '&aPvP enabling in %time% second(s).'
   pvp-disabled: '&6&l>&r&c PvP disabled!'
@@ -50,6 +56,7 @@ items:
   weapon:
     slot: 9 # Sword slot inside the player's inventory
     material: DIAMOND_SWORD # Item to use as the sword
+    custom-model-data: -1 # Set to -1 to disable, or use >= 0 for custom model data
     name: '&7> &#db86e6&lP&#da85d0&lv&#d984ba&lP &#d883a4&lS&#d8818d&lw&#d78077&lo&#d67f61&lr&#d57e4b&ld &7<' # Name of the item
     lore: # Item description, shown when hovering over in inventory
       - "&7Equip this sword to fight other players!"
