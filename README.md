@@ -1,4 +1,13 @@
+<!-- DOWNLOAD_BADGES_START -->
+<p align="center">
+  <a href="https://gitlab.com/siberanka/HubPvP-folia/-/releases/permalink/latest/downloads/plugin.jar"><img alt="Download Paper" src="https://img.shields.io/badge/Download-Paper-2c2f33?logo=gitlab&amp;logoColor=white"></a>
+  <a href="https://gitlab.com/siberanka/HubPvP-folia/-/releases/permalink/latest/downloads/plugin.jar"><img alt="Download Folia" src="https://img.shields.io/badge/Download-Folia-87c540?logo=gitlab&amp;logoColor=white"></a>
+</p>
+<!-- DOWNLOAD_BADGES_END -->
+
 # HubPvP
+
+[Upstream project, authors, and license status](UPSTREAM_ATTRIBUTION.md)
 
 HubPvP plugin, created by Quared.
 
