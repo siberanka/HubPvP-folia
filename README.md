@@ -1,57 +1,56 @@
-# HubPvP
+# HubPvP Folia
 
-HubPvP plugin, created by Quared.
+A maintained Paper and Folia fork of [Quared0/HubPvP](https://github.com/Quared0/HubPvP). HubPvP gives lobby players an opt-in PvP item: players can fight only while they have PvP enabled.
 
-# What is HubPvP?
+## Features
 
-HubPvP is an essential plugin for every server's lobby. This allows players to equip the sword and PvP each other! Every
-message and option can be changed in the plugin's config.yml.
+- Paper and Folia 1.21.x support
+- Configurable weapon, armor, slots, worlds, cooldowns, and messages
+- Optional PlaceholderAPI integration with `%hubpvp_status%`
+- PlaceholderAPI parsing in player-facing messages
+- Geyser and Floodgate-compatible join handling
+- Safe recovery of temporary HubPvP armor after an unclean shutdown
+- Preservation of the player's original armor and flight state
 
-# How it works
+## Requirements
 
-When someone equips the sword, their PvP is enabled. This allows them to PvP other players with their PvP on as well.
-Once the sword is unequipped, the player will no longer be in PvP and can't be attacked.
+- Java 17 or newer
+- Paper 1.21.x or a compatible Folia build
+- PlaceholderAPI is optional
 
-# Features:
+## Installation
 
-- Fully customizable
-- Configuration reloading
-- Easy to set up
-- Fun plugin for everyone
-- Paper 1.21.x support
-- Folia support
-- PlaceholderAPI support (`%hubpvp_status%`)
-- Geyser/Floodgate compatibility improvements
+1. Download the JAR from [Releases](https://github.com/siberanka/HubPvP-folia/releases).
+2. Put it in the server's `plugins` directory.
+3. Restart the server and review `plugins/HubPvP/config.yml`.
 
-# Commands:
+Do not replace a production configuration blindly. Back it up first and merge newly introduced options where necessary.
 
-- /hubpvp - Permission: hubpvp.reload
+## Commands and permissions
 
-# What versions is it?
+| Command or permission | Purpose | Default |
+| --- | --- | --- |
+| `/hubpvp` | Reloads the plugin configuration | `hubpvp.reload` |
+| `hubpvp.use` | Allows use of the PvP item | Everyone |
 
-HubPvP natively supports Paper 1.21.x and Folia 1.21.11.
+## Temporary equipment safety
 
-# 2.0.0 Update (siberanka)
+HubPvP marks the armor it creates. On join, only marked HubPvP armor is removed. For installations upgraded from an older release, `inventory.cleanup-legacy-pvp-armor-on-join` may remove a legacy armor set only when all four pieces exactly match the configured HubPvP set. Unrelated player armor is not cleared.
 
-The following updates were made by **siberanka**:
+## Building
 
-- Upgraded project version to `2.0.0`
-- Updated API target to Paper `1.21.x` and enabled Folia support in `plugin.yml`
-- Added inventory lock setting: `inventory.lock-item-slots` (default `true`)
-- Added weapon custom model data setting: `items.weapon.custom-model-data` (default `-1`)
-- Implemented `%hubpvp_status%` PlaceholderAPI expansion
-- Enabled PlaceholderAPI parsing in player-facing messages
-- Added automatic config default sync on startup and `/hubpvp reload`
-- Fixed Geyser/Floodgate join issues by checking Floodgate API directly and clearing join armor for Floodgate players
-- Refactored scheduler flow to be Paper/Folia compatible
+```bash
+mvn clean verify
+```
 
-# 2.0.1 Update (siberanka)
+The release JAR is written to `target/HubPvP-<version>.jar`.
 
-- Marks temporary PvP equipment so stale armor can be removed safely after an unclean shutdown
-- Migrates only a complete legacy HubPvP armor set and never clears unrelated player armor
-- Preserves and restores both flight permission and active flight state
-- Clones saved armor snapshots to prevent accidental inventory aliasing
+## Changes
 
-# Where can I download it?
+See [CHANGELOG.md](CHANGELOG.md).
 
-You can download it at https://www.spigotmc.org/resources/hubpvp.93475/ or in the releases section on GitHub.
+## Attribution and licensing
+
+HubPvP was created by **Quared**. This repository is a maintained fork by **siberanka** and preserves the original Git history and attribution.
+
+The upstream repository does not currently contain a license file. No additional license is asserted here; obtain permission from the relevant rights holders before redistributing or reusing the source outside the terms under which you received it.

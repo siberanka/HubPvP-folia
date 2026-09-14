@@ -11,7 +11,29 @@
 
     <name>HubPvP</name>
 
-    <description>HubPvP plugin</description>
+    <description>Opt-in lobby PvP for Paper and Folia servers</description>
+    <url>https://github.com/siberanka/HubPvP-folia</url>
+
+    <developers>
+        <developer>
+            <name>Quared</name>
+            <roles>
+                <role>Original author</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>siberanka</name>
+            <roles>
+                <role>Maintainer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/siberanka/HubPvP-folia.git</connection>
+        <developerConnection>scm:git:https://github.com/siberanka/HubPvP-folia.git</developerConnection>
+        <url>https://github.com/siberanka/HubPvP-folia</url>
+    </scm>
     <properties>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
