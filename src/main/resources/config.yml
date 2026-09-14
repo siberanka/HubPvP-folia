@@ -30,6 +30,9 @@ disabled-worlds:
 
 inventory:
   lock-item-slots: true # Prevent moving items inside player inventory
+  # Remove a complete legacy HubPvP armor set left behind by an unclean shutdown.
+  # Unrelated armor is never removed.
+  cleanup-legacy-pvp-armor-on-join: true
 
 # --------------------------------------------------
 # Messages

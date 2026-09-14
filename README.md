@@ -45,6 +45,13 @@ The following updates were made by **siberanka**:
 - Fixed Geyser/Floodgate join issues by checking Floodgate API directly and clearing join armor for Floodgate players
 - Refactored scheduler flow to be Paper/Folia compatible
 
+# 2.0.1 Update (siberanka)
+
+- Marks temporary PvP equipment so stale armor can be removed safely after an unclean shutdown
+- Migrates only a complete legacy HubPvP armor set and never clears unrelated player armor
+- Preserves and restores both flight permission and active flight state
+- Clones saved armor snapshots to prevent accidental inventory aliasing
+
 # Where can I download it?
 
 You can download it at https://www.spigotmc.org/resources/hubpvp.93475/ or in the releases section on GitHub.
