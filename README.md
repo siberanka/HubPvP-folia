@@ -1,5 +1,7 @@
 # HubPvP Folia
 
+[GitHub releases](https://github.com/siberanka/HubPvP-folia/releases) · [GitLab releases](https://gitlab.com/siberanka/HubPvP-folia/-/releases)
+
 A maintained Paper and Folia fork of [Quared0/HubPvP](https://github.com/Quared0/HubPvP). HubPvP gives lobby players an opt-in PvP item: players can fight only while they have PvP enabled.
 
 ## Features
@@ -20,7 +22,7 @@ A maintained Paper and Folia fork of [Quared0/HubPvP](https://github.com/Quared0
 
 ## Installation
 
-1. Download the JAR from [Releases](https://github.com/siberanka/HubPvP-folia/releases).
+1. Download the JAR from the GitHub or GitLab releases page.
 2. Put it in the server's `plugins` directory.
 3. Restart the server and review `plugins/HubPvP/config.yml`.
 
@@ -51,6 +53,4 @@ See [CHANGELOG.md](CHANGELOG.md).
 
 ## Attribution and licensing
 
-HubPvP was created by **Quared**. This repository is a maintained fork by **siberanka** and preserves the original Git history and attribution.
-
-The upstream repository does not currently contain a license file. No additional license is asserted here; obtain permission from the relevant rights holders before redistributing or reusing the source outside the terms under which you received it.
+HubPvP was created by **Quared**. This repository is maintained by **siberanka** and preserves the original Git history. See [UPSTREAM_ATTRIBUTION.md](UPSTREAM_ATTRIBUTION.md) for project lineage and license status.
